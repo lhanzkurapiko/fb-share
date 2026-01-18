@@ -6,35 +6,30 @@ import { fileURLToPath } from "url";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Base API URL
-const BASE_API = "https://vern-rest-api.vercel.app/api/share?cookie=&link=&limit=";
+const SHARE_API = "https://vern-rest-api.vercel.app/api/share";
 
-// Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Serve frontend
 app.use(express.static(path.join(__dirname, "public")));
 
-// Proxy ShareBoost API
-app.get("/tools/shareboost", async (req, res) => {
-  try {
-    const { cookie, link, limit, delay } = req.query;
+app.get("/tools/share", async (req, res) => {
+try {
+const { cookie, link, limit } = req.query;
 
-    if (!cookie || !link || !limit || !delay) {
-      return res.status(400).json({
-        status: "error",
-        message: "Missing parameters"
-      });
-    }
+if (!cookie || !link || !limit) { return res.status(400).json({ status: "error", message: "Missing required parameters", required: ["cookie", "link", "limit"] }); } const apiURL = `${SHARE_API}?` + new URLSearchParams({ cookie, link, limit }).toString(); const start = Date.now(); const response = await fetch(apiURL, { method: "GET", headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" } }); const data = await response.json(); res.json({ success: true, proxy: "vern-rest-api", responseTime: `${Date.now() - start}ms`, data }); 
 
-    const apiURL =
-      `${BASE_API}/tools/shareboost?` +
-      new URLSearchParams({
-        cookie,
-        link,
-        limit,
-        delay
+} catch (err) {
+res.status(500).json({
+success: false,
+message: err.message
+});
+}
+});
+
+app.listen(PORT, () => {
+console.log(🍪 FB - SHARE BOOST running at http://localhost:${PORT});
+});        delay
       });
 
     const start = Date.now();
